@@ -25,8 +25,10 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         if not self.current_user:
             self.close()
             return
+        self.user_record = self.control.get_user_by_id(self.current_user)
         logging.info("WebSocket opened")
         self.control._clients.append(self)
+        self.write_message({"user": self.user_record})
         self.write_message(self.control._opinion)
         for x in self.control._clients:
             x.write_message({"connections":len(self.control._clients)})
@@ -40,9 +42,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         elif message.get("opinion") == "decrement":
             self.control.decrement()
             broadcast = self.control._opinion
-        else:
-            self.write_message({"echo":"You said: {}".format(message.get("echo"))})
-            logging.info(message)
+        elif message.get("echo"):
+            broadcast = {"echo":"{} said: {}".format(self.user_record["email"],
+                                                     message["echo"])}
         if broadcast is not None:
             for x in self.control._clients:
                 x.write_message(broadcast)

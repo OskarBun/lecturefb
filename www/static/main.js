@@ -1,4 +1,5 @@
 require.config({
+    urlArgs: "v=" + (new Date()).getTime(),
     baseUrl: "static",
     paths: {
         "jquery":   "bower_components/jquery/dist/jquery",
@@ -25,6 +26,7 @@ require([
         var appl = window.appl = new Appl();
 
         $(function(){
+            appl.toggle_connection();
             ko.applyBindings(appl);
         });
     }

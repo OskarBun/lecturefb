@@ -14,6 +14,7 @@ define([
 		this.connections = ko.observable(0);
 		this.ws = null;
 		this.broadcast = ko.observable();
+		this.user = ko.observable();
 	}
 
 	Appl.prototype.send = function(obj){
@@ -35,11 +36,14 @@ define([
 	Appl.prototype.received = function(obj){
 		console.log(obj);
 		this.broadcast(obj);
+		if(obj["user"] !== undefined){
+			this.user(obj.user);
+		}
 		if(obj["opinion"] !== undefined){
 			this.opinion(obj.opinion);
 		}
 		if(obj["echo"] !== undefined){
-			this.messages.push(obj.echo);
+			this.messages.splice(0, 0, obj.echo);
 		}
 		if(obj["connections"] !== undefined){
 			this.connections(obj.connections);
@@ -62,7 +66,7 @@ define([
 		if(this.ws){
 			this.ws.close();
 		}
-		else if(document.getElementById("login")){
+		else{
 			var protocol = document.location.protocol == "https:"? "wss://" : "ws://";
 			var ws = this.ws = new WebSocket(protocol + document.domain + ":" + document.location.port + "/websocket");
 			ws.onopen = this.opened.bind(this);

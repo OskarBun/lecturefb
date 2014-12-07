@@ -92,6 +92,14 @@ class Control(object):
 	def decrement(self):
 		self._opinion["opinion"] = self._opinion["opinion"] - 1
 
+	def get_user_by_id(self, id):
+		with self.session as session:
+			person = session.query(model.Person).get(id)
+			return {
+				"id": person.id,
+				"email": person.email
+			}
+
 	def _login(self, email, password):
 		with self.session as session:
 			person = session.query(model.Person).filter(and_(model.Person.email==email,
