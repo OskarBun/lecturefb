@@ -1,0 +1,80 @@
+
+define([
+	"knockout",
+	"chartjs"
+	],
+	function(ko, Chart){
+
+	function Appl(){
+		this.title = ko.observable("Lecture Feedback");
+		this.status = ko.observable("disconnected");
+		this.messages = ko.observableArray();
+		this.input = ko.observable();
+		this.opinion = ko.observable(0);
+		this.connections = ko.observable(0);
+		this.ws = null;
+		this.broadcast = ko.observable();
+	}
+
+	Appl.prototype.send = function(obj){
+		this.ws.send(ko.toJSON(obj));
+	};
+
+	Appl.prototype.opened = function(){
+		this.status("connected");
+		this.send(
+			{"name":document.getElementById("login")}
+		);
+	};
+
+	Appl.prototype.closed = function(){
+		this.status("disconnected");
+		this.ws = null;
+	};
+
+	Appl.prototype.received = function(obj){
+		console.log(obj);
+		this.broadcast(obj);
+		if(obj["opinion"] !== undefined){
+			this.opinion(obj.opinion);
+		}
+		if(obj["echo"] !== undefined){
+			this.messages.push(obj.echo);
+		}
+		if(obj["connections"] !== undefined){
+			this.connections(obj.connections);
+		}
+	};
+
+	Appl.prototype.echo = function(){
+		this.send({"echo":this.input()});
+	};
+
+	Appl.prototype.bless = function(){
+		this.send({"opinion":"increment"});
+	};
+
+	Appl.prototype.blast = function(){
+		this.send({"opinion":"decrement"});
+	};
+
+	Appl.prototype.toggle_connection = function(){
+		if(this.ws){
+			this.ws.close();
+		}
+		else if(document.getElementById("login")){
+			var protocol = document.location.protocol == "https:"? "wss://" : "ws://";
+			var ws = this.ws = new WebSocket(protocol + document.domain + ":" + document.location.port + "/websocket");
+			ws.onopen = this.opened.bind(this);
+			var received = this.received.bind(this);
+			ws.onmessage = function(evt){
+				var obj = ko.utils.parseJson(evt.data);
+				received(obj);
+			};
+			ws.onclose = this.closed.bind(this);
+		}
+	};
+
+	return Appl;
+});
+
