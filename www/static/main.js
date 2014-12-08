@@ -31,6 +31,11 @@ require([
             template: { require: "text!modules/lectureform/main-tmpl.html"}
         });
 
+        ko.components.register("lecturelist", {
+            viewModel: { require: "modules/lecturelist/main" },
+            template: { require: "text!modules/lecturelist/main-tmpl.html"}
+        });
+
         var appl = window.appl = new Appl();
 
         $(function(){

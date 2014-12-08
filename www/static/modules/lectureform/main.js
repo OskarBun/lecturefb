@@ -15,7 +15,7 @@ define([
             this.error = ko.observable();
         }
 
-        Panel.prototype.save = function () {
+        Panel.prototype.save = function(){
             this.appl.send("new_lecture",
                 {
                     "title": this.title(),

@@ -26,7 +26,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         if not self.current_user:
             self.close()
             return
-        self.user_record = self.control.get_user_by_id(self.current_user)
+        self.user_record = self.control._get_user_by_id(self.current_user)
         logging.info("WebSocket opened")
         self.control._clients.append(self)
         self.write_message({"user": self.user_record})
@@ -66,6 +66,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         action = message.get("action")
 
         try:
+            if action[0] == '_':
+                raise Exception("Access violation")
+
             logging.info(message)
             args = message.get("args", {})
 
@@ -74,6 +77,7 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
             result = method(self.current_user, **args)
             self.write_message(utils.dumps({"result": result,
                                             "response_id": message.get("request_id")}))
+            self.control._flush()
 
         except Exception as ex:
             logging.exception(ex)
@@ -82,7 +86,11 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
                                 "error" : error,
                                 "response_id": message.get("request_id"),
                                 })
+            self.control._flush(ex)
 
     def on_close(self):
         logging.info("WebSocket closed")
         self.control._clients.remove(self)
+
+    def broadcast(self, message):
+        self.write_message(message)

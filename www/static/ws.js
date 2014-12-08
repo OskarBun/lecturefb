@@ -15,6 +15,7 @@ define([
 		this.ws = null;
 		this.broadcast = ko.observable();
 		this.user = ko.observable();
+		this.error = ko.observable();
 		this.callbacks = {};
 		this.request_seed = 0;
 	}

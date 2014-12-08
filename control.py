@@ -6,9 +6,11 @@ from sqlalchemy.schema import MetaData, ForeignKeyConstraint, DropConstraint,\
 	DropTable, Table
 from sqlalchemy.sql.expression import and_
 from lecturefb import model
+from lecturefb import utils
+from lecturefb.protocol import Protocol
 
 
-class Control(object):
+class Control(Protocol):
 	
 	_SESSION_EXTENSIONS_ = []
 	_SESSION_KWARGS_ = {"autoflush":False}
@@ -86,14 +88,18 @@ class Control(object):
 			session.execute(DropTable(table))
 		
 		session.commit()
-	
-	def increment(self):
-		self._opinion["opinion"] = self._opinion["opinion"] + 1
 
-	def decrement(self):
-		self._opinion["opinion"] = self._opinion["opinion"] - 1
+	def _flush(self, error = None):
+		if not error:
+			for message in self._pending:
+				for client in self._clients:
+					client.broadcast(message)
+		self._pending.clear()
 
-	def get_user_by_id(self, id):
+	def _broadcast(self, message):
+		self._pending.append(utils.dumps(message))
+
+	def _get_user_by_id(self, id):
 		with self.session as session:
 			person = session.query(model.Person).get(id)
 			return {
@@ -115,6 +121,12 @@ class Control(object):
 				session.commit()
 			return str(person.id)
 
+	def increment(self):
+		self._opinion["opinion"] = self._opinion["opinion"] + 1
+
+	def decrement(self):
+		self._opinion["opinion"] = self._opinion["opinion"] - 1
+
 	def new_lecture(self, accl, title, description, starts):
 		with self.session as session:
 			starts = datetime.datetime.strptime(starts, "%Y-%m-%d %H:%M")
@@ -126,7 +138,19 @@ class Control(object):
 			lecture = model.Lecture(title = title, description = description, starts = starts, speaker_id = accl)
 			session.add(lecture)
 			session.commit()
+			self._broadcast({"signal": "new_lectured", "message": self.lecture_to_json(lecture)})
 			return {"id": lecture.id}
+
+	def filter_lectures(self, accl, speaker_id, from_date = None, to_date = None):
+		with self.session as session:
+			lectures = session.query(model.Lecture).filter(model.Lecture.speaker_id == speaker_id)
+			if from_date:
+				from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d %H:%M")
+				lectures = lectures.filter(model.Lecture.starts >= from_date)
+			if to_date:
+				to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d %H:%M")
+				lectures = lectures.filter(model.Lecture.starts <= to_date)
+			return [self.lecture_to_json(l) for l in lectures]
 
 
 
