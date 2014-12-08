@@ -6,7 +6,10 @@ require.config({
         "bootstrap": "bower_components/bootstrap/dist/js/bootstrap",
         "chartjs":  "lib/Chart.js/Chart",
         "knockout": "bower_components/knockout/dist/knockout.debug",
-        "text":     "bower_components/requirejs-text/text"
+        "text":     "bower_components/requirejs-text/text",
+        "datetimepicker": "bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
+        "kojqueryui":   "lib/ko-jqueryui",
+        "moment":       "bower_components/moment/moment"
     }
 });
 
@@ -21,6 +24,11 @@ require([
         ko.components.register("charts", {
             viewModel: { require: "modules/charts/main" },
             template: { require: "text!modules/charts/main-tmpl.html" }
+        });
+
+        ko.components.register("lectureform", {
+            viewModel: { require: "modules/lectureform/main" },
+            template: { require: "text!modules/lectureform/main-tmpl.html"}
         });
 
         var appl = window.appl = new Appl();

@@ -6,7 +6,7 @@ from tornado.options import parse_command_line, define, options
 from pkg_resources import resource_filename  # @UnresolvedImport
 
 from lecturefb.control import Control
-from lecturefb.handlers.control_handler import ControlHandler
+from lecturefb.handlers.websocket_handler import ControlHandler
 from lecturefb.handlers.login_handler import LoginHandler
 from lecturefb.handlers.main_handler import MainHandler
 

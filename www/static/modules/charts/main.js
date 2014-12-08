@@ -1,5 +1,5 @@
 define([
-    "chartjs"
+    "chartjs", "knockout"
     ],
     function(Chart){
         function Panel(params){

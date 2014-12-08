@@ -2,6 +2,7 @@ import logging
 import tornado.websocket
 from tornado.escape import json_decode
 
+from lecturefb import utils
 
 
 class ControlHandler(tornado.websocket.WebSocketHandler):
@@ -33,7 +34,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         for x in self.control._clients:
             x.write_message({"connections":len(self.control._clients)})
 
-    def on_message(self, message):
+
+    def on_message(self, raw_message):
+        '''
         message = json_decode(message)
         broadcast = None
         if message.get("opinion") == "increment":
@@ -45,9 +48,40 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         elif message.get("echo"):
             broadcast = {"echo":"{} said: {}".format(self.user_record["email"],
                                                      message["echo"])}
+        elif message.get("new_lecture"):
+            lecture = message["new_lecture"]
+            starts = datetime.strptime(lecture["datetime"], "%Y-%m-%d %H:%M")
+            try:
+                self.control.new_lecture(lecture["title"], lecture["description"], starts, self.user_record["id"])
+                self.write_message({"success":"Lecture created!"})
+            except Exception as ex:
+                self.write_message({"error": str(ex)})
+
         if broadcast is not None:
             for x in self.control._clients:
                 x.write_message(broadcast)
+        '''
+
+        message = utils.loads(raw_message)
+        action = message.get("action")
+
+        try:
+            logging.info(message)
+            args = message.get("args", {})
+
+            method = getattr(self.control, action)
+
+            result = method(self.current_user, **args)
+            self.write_message(utils.dumps({"result": result,
+                                            "response_id": message.get("request_id")}))
+
+        except Exception as ex:
+            logging.exception(ex)
+            error = str(ex)
+            self.write_message({"result": None,
+                                "error" : error,
+                                "response_id": message.get("request_id"),
+                                })
 
     def on_close(self):
         logging.info("WebSocket closed")

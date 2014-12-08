@@ -1,4 +1,5 @@
 import logging
+import datetime
 from sqlalchemy.engine import create_engine, reflection
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy.schema import MetaData, ForeignKeyConstraint, DropConstraint,\
@@ -97,7 +98,8 @@ class Control(object):
 			person = session.query(model.Person).get(id)
 			return {
 				"id": person.id,
-				"email": person.email
+				"email": person.email,
+				"admin": person.admin
 			}
 
 	def _login(self, email, password):
@@ -108,10 +110,23 @@ class Control(object):
 				person = session.query(model.Person).filter(model.Person.email==email).first()
 				if person is not None:
 					raise Exception("Email or Password incorrect")
-				person = model.Person(email = email, password = password)
+				person = model.Person(email = email, password = password, admin = False)
 				session.add(person)
 				session.commit()
 			return str(person.id)
+
+	def new_lecture(self, accl, title, description, starts):
+		with self.session as session:
+			starts = datetime.datetime.strptime(starts, "%Y-%m-%d %H:%M")
+			lecture = session.query(model.Lecture).filter(and_(model.Lecture.title==title,
+															   model.Lecture.starts==starts,
+															   model.Lecture.speaker_id==accl)).first()
+			if lecture is not None:
+				raise Exception("Lecture already exists")
+			lecture = model.Lecture(title = title, description = description, starts = starts, speaker_id = accl)
+			session.add(lecture)
+			session.commit()
+			return {"id": lecture.id}
 
 
 
