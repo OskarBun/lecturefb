@@ -22,8 +22,11 @@ class LoginHandler(tornado.web.RequestHandler):
 		try:
 			email = self.get_argument("email")
 			password = self.get_argument("password")
-			accl = self.control._login(email, password)
+			accl, admin = self.control._login(email, password)
 			self.set_secure_cookie(self.cookie_name, accl)
-			self.redirect("/")
+			if admin is True:
+				self.redirect("/speaker")
+			else:
+				self.redirect("/")
 		except Exception as ex:
 			self.get(str(ex))

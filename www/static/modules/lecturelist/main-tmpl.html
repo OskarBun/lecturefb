@@ -1,6 +1,6 @@
 <div class="list-group">
     <div data-bind="foreach:items">
-        <a href="#" data-bind="click:$parent.showlecture($data)" class="list-group-item">
+        <a class="list-group-item" data-bind="click:$parent.item.bind($parent, $data), css:{active:$data==$parent.item()}">
           <h4 class="list-group-item-heading" data-bind="text:title"></h4>
 
           <p class="list-group-item-text" data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></p>

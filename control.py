@@ -22,7 +22,6 @@ class Control(Protocol):
 		'''
 		self._clients = []
 		self._pending = []
-		self._opinion = {"opinion":0}
 		
 		logging.info("connecting to %s",db_url)
 		params = dict(echo=echo)
@@ -119,13 +118,7 @@ class Control(Protocol):
 				person = model.Person(email = email, password = password, admin = False)
 				session.add(person)
 				session.commit()
-			return str(person.id)
-
-	def increment(self):
-		self._opinion["opinion"] = self._opinion["opinion"] + 1
-
-	def decrement(self):
-		self._opinion["opinion"] = self._opinion["opinion"] - 1
+			return str(person.id), person.admin
 
 	def new_lecture(self, accl, title, description, starts):
 		with self.session as session:
@@ -151,6 +144,22 @@ class Control(Protocol):
 				to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d %H:%M")
 				lectures = lectures.filter(model.Lecture.starts <= to_date)
 			return [self.lecture_to_json(l) for l in lectures]
+
+	def new_lecture_transcript(self, accl, lecture_id, comment, type):
+		with self.session as session:
+			when = datetime.datetime.today()
+			comment = model.Transcript(lecture_id=lecture_id, when=when, comment=comment, type=type, person_id=accl)
+			session.add(comment)
+			session.commit()
+			self._broadcast({"signal": "lecture_commented", "message": self.transcript_to_json(comment)})
+			return {"id": comment.id}
+
+
+	def lecture_transcripts(self, accl, lecture_id, type):
+		with self.session as session:
+			comments = session.query(model.Transcript).filter(and_(model.Transcript.lecture_id==lecture_id,
+																   model.Transcript.type==type))
+			return [self.transcript_to_json(t) for t in comments]
 
 
 

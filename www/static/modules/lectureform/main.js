@@ -31,6 +31,9 @@ define([
                     this.success("Lecture created")
                 }.bind(this)
             );
+            this.title('');
+            this.description('');
+            this.starts('');
         };
 
 

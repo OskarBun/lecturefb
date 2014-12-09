@@ -17,10 +17,11 @@ require.config({
 require([
     "jquery",
     "knockout",
-    "./ws",
+    "jssignals",
+    "./appl",
     "bootstrap"
     ],
-    function($, ko, Appl){
+    function($, ko, signals, Appl){
 
         ko.components.register("charts", {
             viewModel: { require: "modules/charts/main" },
@@ -42,7 +43,16 @@ require([
             template: { require: "text!modules/lecturereview/main-tmpl.html"}
         });
 
+        ko.components.register("transcripts", {
+            viewModel: { require: "modules/transcripts/main" },
+            template: { require: "text!modules/transcripts/main-tmpl.html"}
+        });
+
         var appl = window.appl = new Appl();
+
+        appl.componentsignal = {
+			showlecture : new signals.Signal()
+		};
 
         $(function(){
             appl.toggle_connection();

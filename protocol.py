@@ -11,3 +11,15 @@ class Protocol(object):
             "description": lecture.description,
             "speaker_id": lecture.speaker_id
         }
+
+    def transcript_to_json(self, comment):
+        return {
+            "id": comment.id,
+            "_type": "Transcript",
+            "lecture_id": comment.lecture_id,
+            "when": comment.when,
+            "comment": comment.comment,
+            "type": comment.type,
+            "person_id": comment.person_id,
+            "person_email": comment.person.email
+        }

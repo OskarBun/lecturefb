@@ -6,6 +6,7 @@ from tornado.options import parse_command_line, define, options
 from pkg_resources import resource_filename  # @UnresolvedImport
 
 from lecturefb.control import Control
+from lecturefb.handlers.logout_handler import LogoutHandler
 from lecturefb.handlers.websocket_handler import ControlHandler
 from lecturefb.handlers.login_handler import LoginHandler
 from lecturefb.handlers.main_handler import MainHandler
@@ -14,9 +15,11 @@ define("port", 8888, int, help="port to listen on")
 
 def main():
 	handlers = [
-		(r"/", MainHandler),
+		(r"/", MainHandler, {"page": "person-index.html"}),
+		(r"/speaker", MainHandler, {"page": "speaker-index.html"}),
 		(r"/websocket", ControlHandler),
-		(r"/login", LoginHandler)
+		(r"/login", LoginHandler),
+		(r"/logout", LogoutHandler)
 	]
 	settings = dict(
 		static_path = resource_filename('lecturefb',"www/static"),

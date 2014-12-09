@@ -4,6 +4,10 @@ from tornado.web import authenticated
 
 class MainHandler(tornado.web.RequestHandler):
 
+    def initialize(self, page = "index.html"):
+        self.page = page
+
+
     @property
     def cookie_name(self):
         return self.application.settings.get("cookie_name")
@@ -19,4 +23,4 @@ class MainHandler(tornado.web.RequestHandler):
 
     @authenticated
     def get(self):
-        self.render("index.html")
+        self.render(self.page)

@@ -3,18 +3,24 @@
  */
 
 define([
-    "knockout", "moment","jssignals"
+    "knockout", "moment"
     ],
     function(ko, moment) {
         function Panel(params) {
             this.appl = params.appl;
             this.items = ko.observableArray();
             this.moment = moment;
-            this.sub = this.appl.broadcast.subscribe(function(message){
+            this.item = ko.observable();
+            this.item.subscribe(function(value){
+                this.appl.componentsignal.showlecture.dispatch(value);
+            }, this);
+            this.broadcast_sub = this.appl.broadcast.subscribe(function(message){
                 if(message.signal=="new_lectured"){
-                    this.items.push(message.message);
+                    if(message.message["speaker_id"]==this.appl.user().id){
+                        this.items.push(message.message);
+                    }
                 }
-            }.bind(this));
+            }, this);
         }
 
         Panel.prototype.init = function(){
@@ -37,11 +43,7 @@ define([
         };
 
         Panel.prototype.dispose = function(){
-            this.sub.dispose();
-        };
-
-        Panel.prototype.showlecture = function(lecture){
-            this.appl.componentsignal.showlecture.dispatch(lecture);
+            this.broadcast_sub.dispose();
         };
 
         return Panel;

@@ -1126,7 +1126,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				i = 0,
 				results = context.getElementsByTagName( tag );
 
-			// Filter out possible comments
+			// Filter out possible transcripts
 			if ( tag === "*" ) {
 				while ( (elem = results[i++]) ) {
 					if ( elem.nodeType === 1 ) {

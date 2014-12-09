@@ -20,24 +20,24 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Lecture Feedback</a>
+            <a class="navbar-brand" href="/">Lecture Feedback</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">Archive</a></li>
+                <li><a href="#">Archive</a></li>
             </ul>
+            <ul class="nav navbar-right">
+                <a class="btn btn-default navbar-btn" href="/logout">Logout</a>
+            </ul>
+
         </div>
         <!--/.nav-collapse -->
     </div>
 </nav>
 
 <div class="container">
-    <div class="starter-template">
-        <h1>Start giving Feedback</h1>
 
-        <p class="lead">Look below for lectures to start</p>
-    </div>
 
     <div data-bind="visible:error" class="alert alert-danger">
         <button data-bind="click:error.bind(error, null)" type="button" class="close" data-dismiss="alert"><span
@@ -76,6 +76,6 @@
 </div>
 
 
-<script data-main="static/main" src="static/bower_components/requirejs/require.js"></script>
+<script data-main="static/speaker-main" src="static/bower_components/requirejs/require.js"></script>
 </body>
 </html>

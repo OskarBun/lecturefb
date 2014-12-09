@@ -30,38 +30,9 @@ class ControlHandler(tornado.websocket.WebSocketHandler):
         logging.info("WebSocket opened")
         self.control._clients.append(self)
         self.write_message({"user": self.user_record})
-        self.write_message(self.control._opinion)
-        for x in self.control._clients:
-            x.write_message({"connections":len(self.control._clients)})
 
 
     def on_message(self, raw_message):
-        '''
-        message = json_decode(message)
-        broadcast = None
-        if message.get("opinion") == "increment":
-            self.control.increment()
-            broadcast = self.control._opinion
-        elif message.get("opinion") == "decrement":
-            self.control.decrement()
-            broadcast = self.control._opinion
-        elif message.get("echo"):
-            broadcast = {"echo":"{} said: {}".format(self.user_record["email"],
-                                                     message["echo"])}
-        elif message.get("new_lecture"):
-            lecture = message["new_lecture"]
-            starts = datetime.strptime(lecture["datetime"], "%Y-%m-%d %H:%M")
-            try:
-                self.control.new_lecture(lecture["title"], lecture["description"], starts, self.user_record["id"])
-                self.write_message({"success":"Lecture created!"})
-            except Exception as ex:
-                self.write_message({"error": str(ex)})
-
-        if broadcast is not None:
-            for x in self.control._clients:
-                x.write_message(broadcast)
-        '''
-
         message = utils.loads(raw_message)
         action = message.get("action")
 
