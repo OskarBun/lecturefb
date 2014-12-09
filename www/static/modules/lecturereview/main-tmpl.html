@@ -1,0 +1,20 @@
+<div data-bind="visible:lecture" >
+    <!-- ko with:lecture -->
+    <div class="row">
+        <div class="col-md-4" id="lectureReview">
+            <h2 data-bind="text:title"></h2>
+        </div>
+        <div class="col-md-8">
+            <div class="alert alert-success">
+                <strong data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></strong>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <p data-bind="text:description"></p>
+        </div>
+        <transcripts params="{appl:$root, lecture: $data}"></transcripts>
+    </div>
+    <!-- /ko -->
+</div>
