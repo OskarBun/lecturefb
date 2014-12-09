@@ -3,7 +3,7 @@
  */
 
 define([
-    "knockout", "moment"
+    "knockout", "moment","jssignals"
     ],
     function(ko, moment) {
         function Panel(params) {
@@ -20,7 +20,6 @@ define([
         Panel.prototype.init = function(){
             this.load();
         };
-
 
         Panel.prototype.load = function(){
             this.appl.send("filter_lectures",
@@ -41,6 +40,10 @@ define([
             this.sub.dispose();
         };
 
-        return Panel
+        Panel.prototype.showlecture = function(lecture){
+            this.appl.componentsignal.showlecture.dispatch(lecture);
+        };
+
+        return Panel;
     }
 );

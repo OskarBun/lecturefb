@@ -9,7 +9,8 @@ require.config({
         "text":     "bower_components/requirejs-text/text",
         "datetimepicker": "bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
         "kojqueryui":   "lib/ko-jqueryui",
-        "moment":       "bower_components/moment/moment"
+        "moment":       "bower_components/moment/moment",
+        "jssignals":    "bower_components/js-signals/dist/signals"
     }
 });
 
@@ -34,6 +35,11 @@ require([
         ko.components.register("lecturelist", {
             viewModel: { require: "modules/lecturelist/main" },
             template: { require: "text!modules/lecturelist/main-tmpl.html"}
+        });
+
+        ko.components.register("lecturereview", {
+            viewModel: { require: "modules/lecturereview/main" },
+            template: { require: "text!modules/lecturereview/main-tmpl.html"}
         });
 
         var appl = window.appl = new Appl();

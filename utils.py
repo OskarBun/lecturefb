@@ -1,8 +1,3 @@
-'''
-Created on Nov 1, 2013
-
-@author: peterb
-'''
 import json
 from decimal import Decimal    
 import datetime

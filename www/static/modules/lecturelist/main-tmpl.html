@@ -1,22 +1,11 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Lectures</h3>
+<div class="list-group">
+    <div data-bind="foreach:items">
+        <a href="#" data-bind="click:$parent.showlecture($data)" class="list-group-item">
+          <h4 class="list-group-item-heading" data-bind="text:title"></h4>
+
+          <p class="list-group-item-text" data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></p>
+        </a>
     </div>
-    <table class="table table-condensed table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>id</th>
-            <th>title</th>
-            <th>starts</th>
-        </tr>
-        </thead>
-        <tbody data-bind="foreach:items">
-        <tr>
-            <td data-bind="text:id"></td>
-            <td data-bind="text:title"></td>
-            <td data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></td>
-        </tr>
-        </tbody>
-    </table>
 </div>
+
 <span data-bind="template:{afterRender: init.bind($data) }"></span>

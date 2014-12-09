@@ -1,23 +1,22 @@
 
 define([
-	"knockout",
-	"chartjs"
+	"knockout", "jssignals"
 	],
-	function(ko, Chart){
+	function(ko, signals){
 
 	function Appl(){
 		this.title = ko.observable("Lecture Feedback");
 		this.status = ko.observable("disconnected");
-		this.messages = ko.observableArray();
 		this.input = ko.observable();
-		this.opinion = ko.observable(0);
-		this.connections = ko.observable(0);
 		this.ws = null;
 		this.broadcast = ko.observable();
 		this.user = ko.observable();
 		this.error = ko.observable();
 		this.callbacks = {};
 		this.request_seed = 0;
+		this.componentsignal = {
+			showlecture : new signals.Signal()
+		};
 	}
 
 	Appl.prototype.send = function(action, args, callback){
@@ -50,31 +49,10 @@ define([
 			}
 		} else{
 			this.broadcast(obj);
-			if(obj["user"] !== undefined){
+			if(obj["user"] !== undefined) {
 				this.user(obj.user);
 			}
-			if(obj["opinion"] !== undefined){
-				this.opinion(obj.opinion);
-			}
-			if(obj["echo"] !== undefined){
-				this.messages.splice(0, 0, obj.echo);
-			}
-			if(obj["connections"] !== undefined){
-				this.connections(obj.connections);
-			}
 		}
-	};
-
-	Appl.prototype.echo = function(){
-		this.send({"echo":this.input()});
-	};
-
-	Appl.prototype.bless = function(){
-		this.send({"opinion":"increment"});
-	};
-
-	Appl.prototype.blast = function(){
-		this.send({"opinion":"decrement"});
 	};
 
 	Appl.prototype.toggle_connection = function(){
