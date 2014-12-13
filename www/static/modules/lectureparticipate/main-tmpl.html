@@ -1,0 +1,51 @@
+<div data-bind="visible:success" class="alert alert-success">
+    <button data-bind="click:success.bind(success, null)" type="button" class="close" data-dismiss="alert"><span
+            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <strong data-bind="text:success"></strong>
+</div>
+<div data-bind="visible:lecture">
+    <!-- ko with:lecture -->
+    <div class="row">
+        <h2 data-bind="text:title"></h2>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <issues params="{appl:$root, lecture:$data}"></issues>
+        </div>
+        <div class="col-md-7">
+            <progressbar params="{appl:$root, lecture:$data}"></progressbar>
+        </div>
+    </div>
+    <div class="row" data-bind="if:$root.user">
+        <div class="col-md-5">
+            <h4>Comment</h4>
+
+            <transcripts params="{appl:$root, lecture:$data, type:'formal', person_id:$root.user().id}"></transcripts>
+            <form data-bind="submit:$parent.new_transcript.bind($parent, 'formal')">
+                <textarea class="form-control" id="commentinput" rows="3" placeholder="comment"
+                          data-bind="value:$parent.comment"></textarea>
+                <button class="btn btn-default btn-block" type="submit">send</button>
+            </form>
+        </div>
+        <div class="col-md-7">
+            <h4>Chat</h4>
+            <div class="well well-sm">
+                <div class="scroller">
+                    <transcripts params="{appl:$root, lecture:$data, type:'informal'}"></transcripts>
+                </div>
+            </div>
+            <div>
+                <form data-bind="submit: $parent.new_transcript.bind($parent, 'informal')">
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-bind="value:$parent.message, enable:$parent.status()=='current'" placeholder="chat"
+                               required>
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit" data-bind="enable:$parent.status()=='current'">Send</button>
+                      </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</div>

@@ -1,6 +1,7 @@
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.types import String, Integer, Numeric, DateTime, Date, Time, Enum, Boolean, Text
 from sqlalchemy.schema import Table, Column, ForeignKey
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, deferred
 from sqlalchemy.ext.declarative.api import declared_attr, has_inherited_table, declarative_base
 import re
 
@@ -28,7 +29,7 @@ class Issue(Base):
     TYPE = ['toggle','heat']
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(255))
+    name = Column(String(40))
     type = Column(Enum(*TYPE))
 
 
@@ -42,17 +43,36 @@ class Lecture(Base):
         primaryjoin='Lecture.speaker_id==Person.id', remote_side='Person.id',
         back_populates='lectures')
     starts = Column(DateTime)
+    ends = Column(DateTime)
 
 
 class Person(Base):
 
     id = Column(Integer, primary_key=True)
     email = Column(String(255))
-    password = Column(String(255))
+    _password = deferred(Column("password",String(40), nullable=False))
     admin = Column(Boolean())
     lectures = relationship('Lecture', uselist=True,
         primaryjoin='Lecture.speaker_id==Person.id', remote_side='Lecture.speaker_id',
         back_populates='speaker')
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = self.salt_n_hash(value)
+
+    @password.expression
+    def password(self):
+        return self._password
+
+    @classmethod
+    def salt_n_hash(cls, value):
+        import hashlib
+        return hashlib.sha1(value.encode('utf-8')).hexdigest()
+
 
 
 class Timeseries(Base):
@@ -61,7 +81,6 @@ class Timeseries(Base):
     issue_id = Column(Integer, ForeignKey('issue.id'))
     issue = relationship('Issue', uselist=False,
         primaryjoin='Timeseries.issue_id==Issue.id', remote_side='Issue.id')
-    value = Column(Numeric(36,12))
     lecture_id = Column(Integer, ForeignKey('lecture.id'))
     lecture = relationship('Lecture', uselist=False,
         primaryjoin='Timeseries.lecture_id==Lecture.id', remote_side='Lecture.id')
@@ -69,6 +88,7 @@ class Timeseries(Base):
     person_id = Column(Integer, ForeignKey('person.id'))
     person = relationship('Person', uselist=False,
         primaryjoin='Timeseries.person_id==Person.id', remote_side='Person.id')
+    value = Column(Integer)
 
 
 class Transcript(Base):

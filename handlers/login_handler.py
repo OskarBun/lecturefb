@@ -30,3 +30,4 @@ class LoginHandler(tornado.web.RequestHandler):
 				self.redirect("/")
 		except Exception as ex:
 			self.get(str(ex))
+

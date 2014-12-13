@@ -1,8 +1,8 @@
 
 define([
-	"knockout", "jssignals"
+	"knockout"
 	],
-	function(ko, signals){
+	function(ko){
 
 	function Connect(){
 		this.status = ko.observable("disconnected");

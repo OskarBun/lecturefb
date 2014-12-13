@@ -2014,7 +2014,7 @@ var requirejs, require, define;
         //CommonJS thing with dependencies.
         if (!deps && isFunction(callback)) {
             deps = [];
-            //Remove transcripts from the callback string,
+            //Remove comments from the callback string,
             //look for require calls, and pull them into the dependencies,
             //but only if there are function args.
             if (callback.length) {

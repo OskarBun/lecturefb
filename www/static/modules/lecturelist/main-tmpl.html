@@ -1,10 +1,16 @@
-<div class="list-group">
-    <div data-bind="foreach:items">
-        <a class="list-group-item" data-bind="click:$parent.item.bind($parent, $data), css:{active:$data==$parent.item()}">
-          <h4 class="list-group-item-heading" data-bind="text:title"></h4>
+<h3 data-bind="if:options.upcoming && !options.archive">Upcoming</h3>
+<h3 data-bind="if:options.archive && !options.upcoming">Archive</h3>
+<h3 data-bind="if:options.upcoming && options.archive">Current</h3>
+<div data-bind="css:{scrollerlg:options.scroller}">
+    <div class="list-group">
+        <div data-bind="foreach:items">
+            <a class="list-group-item"
+               data-bind="click:$parent.showlecture.bind($parent, $data), css:{active:$data==$parent.item()}">
+                <h4 class="list-group-item-heading" data-bind="text:title"></h4>
 
-          <p class="list-group-item-text" data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></p>
-        </a>
+                <p class="list-group-item-text" data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></p>
+            </a>
+        </div>
     </div>
 </div>
 

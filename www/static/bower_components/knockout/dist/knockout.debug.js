@@ -90,7 +90,7 @@ ko.utils = (function () {
     var eventsThatMustBeRegisteredUsingAttachEvent = { 'propertychange': true }; // Workaround for an IE9 issue - https://github.com/SteveSanderson/knockout/issues/406
 
     // Detect IE versions for bug workarounds (uses IE conditionals, not UA string, for robustness)
-    // Note that, since IE 10 does not support conditional transcripts, the following logic only detects IE < 10.
+    // Note that, since IE 10 does not support conditional comments, the following logic only detects IE < 10.
     // Currently this is by design, since IE 10+ behaves correctly when treated as a standard browser.
     // If there is a future need to detect specific versions of IE10+, we will amend this.
     var ieVersion = document && (function() {
@@ -2351,7 +2351,7 @@ ko.exportSymbol('jsonExpressionRewriting.insertPropertyAccessorsIntoJson', ko.ex
                 else
                     containerNode.appendChild(nodeToPrepend);
             } else {
-                // Start transcripts must always have a parent and at least one following sibling (the end comment)
+                // Start comments must always have a parent and at least one following sibling (the end comment)
                 containerNode.parentNode.insertBefore(nodeToPrepend, containerNode.nextSibling);
             }
         },
@@ -2366,7 +2366,7 @@ ko.exportSymbol('jsonExpressionRewriting.insertPropertyAccessorsIntoJson', ko.ex
                 else
                     containerNode.appendChild(nodeToInsert);
             } else {
-                // Children of start transcripts must always have a parent and at least one following sibling (the end comment)
+                // Children of start comments must always have a parent and at least one following sibling (the end comment)
                 containerNode.parentNode.insertBefore(nodeToInsert, insertAfterNode.nextSibling);
             }
         },

@@ -1,23 +1,23 @@
 <div data-bind="foreach: messages">
-    <div class="col-md-4">
+    <div data-bind="css:{'col-md-4': $parent.options.blocks, 'col-md-12': !($parent.options.blocks)}">
         <div class="panel panel-default">
-            <div class="panel-heading">
+            <div class="panel-heading" data-bind="visible:$parent.options.blocks || $parent.type=='informal'">
                 <h3 class="panel-title">
-                    <a data-bind="attr:{href:'mailto:' + person_email + '?subject=' + encodeURIComponent($parent.lecture().title) + '&body=' + encodeURIComponent('re: ' + comment)}" class="pull-right">
-                        <i class="fa fa-envelope-o"></i>
-                    </a>
-                    <span data-bind="text:person_email"></span>
+                    <div data-bind="if:$parent.options.email">
+                        <a data-bind="attr:{href:'mailto:' + person_email + '?subject=' + encodeURIComponent($parent.lecture().title) + '&body=' + encodeURIComponent('re: ' + comment)}" class="pull-right">
+                            <i class="fa fa-envelope-o"></i>
+                        </a>
+                    </div>
+                    <div data-bind="if:$parent.type=='informal'">
+                        <span data-bind="text:moment(when).format('HH:mm')" class="pull-right"></span>
+                    </div>
+                    <span data-bind="text:$parent.type=='formal'? person_email : person_id"></span>
+
                 </h3>
             </div>
             <div class="panel-body" data-bind="text:comment"></div>
         </div>
     </div>
 </div>
-
-
-<form data-bind="submit:$data.new_transcript.bind($data)">
-    <textarea class="form-control" rows="3" placeholder="comment" data-bind="value:comment"></textarea>
-    <button class="btn btn-default" type="submit">send</button>
-</form>
 
 <span data-bind="template:{afterRender: init.bind($data) }"></span>

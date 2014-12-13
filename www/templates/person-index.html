@@ -5,8 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lecture Feedback</title>
-    <link rel="stylesheet" type="text/css" href="static/main.css">
-    <!-- static/ is replaced by tornado {{static_url('')}} anyway -->
+    <link rel="stylesheet" type="text/css" href="{{static_url('main.css')}}">
 </head>
 <body>
 
@@ -23,10 +22,12 @@
             <a class="navbar-brand" href="/">Lecture Feedback</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
-
+            <!-- ko template:'speakerlink' --><!-- /ko -->
             <ul class="nav navbar-right">
                 <a class="btn btn-default navbar-btn" href="/logout">Logout</a>
             </ul>
+            <p style="margin-right: 1em;" class="navbar-text navbar-right"
+               data-bind="text:$root.user() && $root.user().email"></p>
 
         </div>
         <!--/.nav-collapse -->
@@ -34,24 +35,40 @@
 </nav>
 
 <div class="container">
-    <div class="starter-template">
-        <h1>Start giving Feedback</h1>
+    <div id="content">
+        <div data-bind="template:error_div"></div>
+        <script id="error_div" type="text/html">
+            <div data-bind="visible:error" class="alert alert-danger">
+                <button data-bind="click:error.bind(error, null)" type="button" class="close" data-dismiss="alert"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <strong data-bind="text:error"></strong>
+            </div>
+        </script>
 
-        <p class="lead">Look below for lectures to start</p>
+        <div class="row">
+            <div class="col-md-3">
+                <lecturelist params="appl:$root, 'upcoming': true, 'archive': true"></lecturelist>
+                <lecturelist params="appl:$root, 'upcoming': true, 'scroller': true"></lecturelist>
+            </div>
+            <div class="col-md-9">
+                <lectureparticipate params="appl:$root"></lectureparticipate>
+            </div>
+        </div>
     </div>
-
-    <div data-bind="visible:error" class="alert alert-danger">
-        <button data-bind="click:error.bind(error, null)" type="button" class="close" data-dismiss="alert"><span
-                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <strong data-bind="text:error"></strong>
-    </div>
-
-
-    put ui stuff
-
 </div>
 
+<footer class="footer">
+    <h4>Thanks for visting</h4>
+</footer>
 
-<script data-main="static/person-main" src="static/bower_components/requirejs/require.js"></script>
+
+<script type="text/html" id="speakerlink">
+    <ul class="nav navbar-nav" data-bind="visible:$root.user() && $root.user().admin">
+        <li><a href="/speaker">Speaker</a></li>
+    </ul>
+</script>
+
+<script src="{{static_url('bower_components/requirejs/require.js')}}"></script>
+<script src="{{static_url('person-main.js')}}"></script>
 </body>
 </html>

@@ -1,3 +1,10 @@
-<button class="btn btn-warning">Too slow</button>
-<button class="btn btn-danger">Too fast</button>
-<button class="btn btn-primary">Repeat last concept</button>
+<div data-bind="visible:success" class="alert alert-success">
+    <button data-bind="click:success.bind(success, null)" type="button" class="close" data-dismiss="alert"><span
+            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <strong data-bind="text:success"></strong>
+</div>
+<button class="btn btn-warning btn-block" data-bind="click:$data.issue.bind($data, 'slow')">Too slow</button>
+<button class="btn btn-danger btn-block" data-bind="click:$data.issue.bind($data, 'fast')">Too fast</button>
+<button type="button" class="btn btn-primary btn-block" data-bind="click:$data.issue.bind($data, 'repeat')">Repeat last concept</button>
+
+

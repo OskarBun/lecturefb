@@ -112,7 +112,7 @@
                 else
                     containerNode.appendChild(nodeToPrepend);
             } else {
-                // Start transcripts must always have a parent and at least one following sibling (the end comment)
+                // Start comments must always have a parent and at least one following sibling (the end comment)
                 containerNode.parentNode.insertBefore(nodeToPrepend, containerNode.nextSibling);
             }
         },
@@ -127,7 +127,7 @@
                 else
                     containerNode.appendChild(nodeToInsert);
             } else {
-                // Children of start transcripts must always have a parent and at least one following sibling (the end comment)
+                // Children of start comments must always have a parent and at least one following sibling (the end comment)
                 containerNode.parentNode.insertBefore(nodeToInsert, insertAfterNode.nextSibling);
             }
         },

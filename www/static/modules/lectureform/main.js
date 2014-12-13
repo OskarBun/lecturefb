@@ -10,6 +10,7 @@ define([
             this.title = ko.observable();
             this.description = ko.observable();
             this.starts = ko.observable();
+            this.ends = ko.observable();
             this.id = ko.observable();
             this.success = ko.observable();
             this.error = ko.observable();
@@ -20,7 +21,8 @@ define([
                 {
                     "title": this.title(),
                     "description": this.description(),
-                    "starts": this.starts()
+                    "starts": this.starts(),
+                    "ends": this.starts().slice(0,11) + this.ends()
                 },
                 function(response){
                     if(response.error){
@@ -28,12 +30,14 @@ define([
                         return;
                     }
                     this.id(response.result.id);
-                    this.success("Lecture created")
+                    this.success("Lecture created");
+                    this.title('');
+                    this.description('');
+                    this.starts('');
+                    this.ends('');
                 }.bind(this)
             );
-            this.title('');
-            this.description('');
-            this.starts('');
+
         };
 
 

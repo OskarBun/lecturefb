@@ -1,20 +1,81 @@
-<div data-bind="visible:lecture" >
+<div data-bind="visible:success" class="alert alert-success">
+    <button data-bind="click:success.bind(success, null)" type="button" class="close" data-dismiss="alert"><span
+            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <strong data-bind="text:success"></strong>
+</div>
+<div data-bind="visible:lecture">
     <!-- ko with:lecture -->
     <div class="row">
         <div class="col-md-4" id="lectureReview">
             <h2 data-bind="text:title"></h2>
         </div>
         <div class="col-md-8">
-            <div class="alert alert-success">
-                <strong data-bind="text:moment(starts).format('MMMM Do YYYY, HH:mm')"></strong>
-            </div>
+            <progressbar params="{appl: $root, lecture: $data}"></progressbar>
         </div>
     </div>
     <div class="row">
         <div class="col-md-4">
             <p data-bind="text:description"></p>
         </div>
-        <transcripts params="{appl:$root, lecture: $data}"></transcripts>
+        <div class="col-md-8">
+            <div class="col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-comments fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div><span class="huge" data-bind="text:$parent.message_stat"></span></div>
+                                <div>Comments!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-tasks fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">50</div>
+                                <div>Responses!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <charts params="{appl:$root, lecture: $data}"></charts>
+    </div>
+    <div class="row">
+        <transcripts params="{appl:$root, lecture: $data, type: 'formal', blocks: true, email: true, length: true}"></transcripts>
     </div>
     <!-- /ko -->
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <a class="btn btn-block btn-danger" role="button" data-toggle="modal" data-target="#deleteModal">Delete lecture</a>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-block btn-danger" data-bind="click:delete_lecture" data-dismiss="modal">Delete lecture</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+

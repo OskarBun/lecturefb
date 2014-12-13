@@ -2,24 +2,28 @@ require.config({
     urlArgs: "v=" + (new Date()).getTime(),
     baseUrl: "static",
     paths: {
-        "jquery":   "bower_components/jquery/dist/jquery",
-        "bootstrap": "bower_components/bootstrap/dist/js/bootstrap",
-        "chartjs":  "lib/Chart.js/Chart",
-        "knockout": "bower_components/knockout/dist/knockout.debug",
-        "text":     "bower_components/requirejs-text/text",
-        "datetimepicker": "bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
-        "kojqueryui":   "lib/ko-jqueryui",
-        "moment":       "bower_components/moment/moment",
-        "jssignals":    "bower_components/js-signals/dist/signals"
+        "jquery":           "bower_components/jquery/dist/jquery",
+        "bootstrap":        "bower_components/bootstrap/dist/js/bootstrap",
+        "chartjs":          "lib/Chart.js/Chart",
+        "knockout":         "bower_components/knockout/dist/knockout.debug",
+        "text":             "bower_components/requirejs-text/text",
+        "datetimepicker":   "bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
+        "kojqueryui":       "utils/ko-jqueryui",
+        "moment":           "bower_components/moment/moment",
+        "signals":        "bower_components/js-signals/dist/signals",
+        "hasher":           "bower_components/hasher/dist/js/hasher",
+        "crossroads":       "bower_components/crossroads/dist/crossroads",
+        "augment":          "bower_components/augment.js/augment"
     }
 });
 
 require([
     "jquery",
     "knockout",
-    "jssignals",
+    "signals",
     "./appl",
-    "bootstrap"
+    "bootstrap",
+    "augment"
     ],
     function($, ko, signals, Appl){
 
@@ -48,13 +52,36 @@ require([
             template: { require: "text!modules/transcripts/main-tmpl.html"}
         });
 
+        ko.components.register("progressbar", {
+            viewModel: { require: "modules/progressbar/main" },
+            template: { require: "text!modules/progressbar/main-tmpl.html"}
+        });
+
+        ko.components.register("speakerdefault", {
+            template: {require: "text!modules/speaker-default.html"}
+        });
+
+        ko.components.register("speakerarchive", {
+            template: {require: "text!modules/speaker-archive.html"}
+        });
+
         var appl = window.appl = new Appl();
 
         appl.componentsignal = {
-			showlecture : new signals.Signal()
+			showlecture : new signals.Signal(),
+            messageslen : new signals.Signal()
 		};
 
+        appl.addRoute("", function(){
+            appl.template("speakerdefault");
+        });
+
+        appl.addRoute("/archive", function(){
+            appl.template("speakerarchive");
+        });
+
         $(function(){
+            appl.start();
             appl.toggle_connection();
             ko.applyBindings(appl);
         });

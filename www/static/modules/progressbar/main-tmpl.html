@@ -1,0 +1,19 @@
+<div data-bind="if:isActive()">
+    <h4>Time remaining</h4>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-bind="style:{width: progresswidth }">
+    <span class="sr-only">progress bar</span>
+  </div>
+    </div>
+</div>
+<div data-bind="visible:isPending()">
+    <div class="alert alert-info">
+        <strong data-bind="text:'Starts: ' + starts().format('HH:mm ddd Do MMMM  YYYY ')"></strong>
+    </div>
+</div>
+<div data-bind="visible:isEnded()">
+    <div class="alert alert-success">
+        <strong data-bind="text:'Finished: ' + ends().format('MMMM Do YYYY')"></strong>
+    </div>
+</div>
+<span data-bind="template:{afterRender: init.bind($data) }"></span>

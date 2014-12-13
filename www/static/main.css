@@ -2,19 +2,60 @@
 @import url("bower_components/font-awesome/css/font-awesome.css");
 @import url("bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css");
 
+html {
+    position: relative;
+    min-height: 100%;
+}
 body {
-  padding-top: 70px;
+    /* Margin bottom by footer height */
+    margin-bottom: 100px;
+    margin-top: 70px;
+}
+.footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+    text-align: center;
+      background-color: #f8f8f8;
+    padding: 25px;
 }
 
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
+.footer-inverse {
+    color: #9d9d9d;
+    background-color: #222;
+}
+
+
+.huge {
+    font-size: 40px;
+    line-height: normal;
+}
+
+.panel-green {
+    border-color: #5cb85c;
+}
+
+.panel-green .panel-heading {
+    border-color: #5cb85c;
+    color: #fff;
+    background-color: #5cb85c;
+}
+
+
+.comment-label {
+    padding: 10px;
 }
 
 .scroller{
-    max-height: 200px;
+    max-height: 300px;
     overflow: auto;
-    height: 50%;
+    height: 300px;
+}
+
+.scrollerlg{
+    max-height: 379px;
+    overflow: auto;
 }
 
 textarea{

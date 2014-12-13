@@ -1,0 +1,8 @@
+<div class="row" data-bind="if:$root.user">
+    <div class="col-md-3">
+        <lecturelist params="appl:$root,'speaker_id':$root.user().id, 'archive': true"></lecturelist>
+    </div>
+    <div class="col-md-9">
+        <lecturereview params="appl:$root"></lecturereview>
+    </div>
+</div>
