@@ -9,7 +9,7 @@ define([
             this.when = ["x", 0];
             this.data = ["users", 0];
             this.when_mean = ["x2", 0];
-            this.data_mean = ["avg", 0];
+            this.data_mean = ["trend", 0];
             this._duration = 50*60; //This is an internal variable used to create the x axis
             this.broadcast_sub = this.appl.broadcast.subscribe(function(message){
                 if(message.signal=="lecture_issued"){
@@ -109,7 +109,7 @@ define([
                 data: {
                     xs: {
                         "users":"x",
-                        "avg":"x2"
+                        "trend":"x2"
                     },
 
                     columns: [
@@ -119,12 +119,12 @@ define([
                         this.data_mean
                     ],
                     types: {
-                        'avg' :"spline"
+                        'trend' :"spline"
                     }
                 },
                 point:{
                     r:function(d){
-                        if(d.id=="avg"){
+                        if(d.id=="trend"){
                             return 0;
                         } else {
                             return 2.5;
