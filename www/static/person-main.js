@@ -17,6 +17,11 @@ require.config({
         "hasher":           "bower_components/hasher/dist/js/hasher",
         "crossroads":       "bower_components/crossroads/dist/crossroads",
         "augment":          "bower_components/augment.js/augment"
+    },
+    shim:{
+        "bootstrap": {
+            "deps": ["jquery"]
+        }
     }
 });
 
