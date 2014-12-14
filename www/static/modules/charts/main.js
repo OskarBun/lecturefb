@@ -122,6 +122,15 @@ define([
                         'avg' :"spline"
                     }
                 },
+                point:{
+                    r:function(d){
+                        if(d.id=="avg"){
+                            return 0;
+                        } else {
+                            return 2.5;
+                        }
+                    }
+                },
                 axis: {
                     x: {
                         tick: {
