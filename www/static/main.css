@@ -62,3 +62,7 @@ body {
 textarea{
     resize:vertical;
 }
+
+#chart .c3-line-avg {
+  stroke-width: 2px;
+}

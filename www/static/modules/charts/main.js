@@ -7,7 +7,9 @@ define([
             this.chart = null;
             this.lecture = ko.observable(params.lecture);
             this.when = ["x", 0];
-            this.data = ["speed", 0];
+            this.data = ["users", 0];
+            this.when_mean = ["x2", 0];
+            this.data_mean = ["avg", 0];
             this._duration = 50*60; //This is an internal variable used to create the x axis
             this.broadcast_sub = this.appl.broadcast.subscribe(function(message){
                 if(message.signal=="lecture_issued"){
@@ -20,6 +22,7 @@ define([
                                 this.data
                             ]
                         });
+                        this.appl.componentsignal.datalen.dispatch(this.data.length-2);
                     }
                 }
             }, this);
@@ -65,19 +68,27 @@ define([
                         });
                         return t;
                     }
-                    clear(this.when, response.result.map(function(tuple){
+                    clear(this.when, response.result.user.map(function(tuple){
                         return tuple[0]/60;
                     }));
-                    clear(this.data, response.result.map(function(tuple){
+                    clear(this.data, response.result.user.map(function(tuple){
+                        return Number(tuple[1].toFixed(2));
+                    }));
+                    clear(this.when_mean, response.result.server.map(function(tuple){
+                        return tuple[0]/60;
+                    }));
+                    clear(this.data_mean, response.result.server.map(function(tuple){
                         return Number(tuple[1].toFixed(2));
                     }));
                     this.chart.load({
                         columns: [
                             this.when,
-                            this.data
+                            this.data,
+                            this.data_mean,
+                            this.when_mean
                         ]
                     });
-                    this.appl.componentsignal.datalen.dispatch(response.result.length);
+                    this.appl.componentsignal.datalen.dispatch(response.result.user.length);
                 }.bind(this)
             );
         };
@@ -94,14 +105,22 @@ define([
                 j -=1;
             }
             x_axis_values.push(0);
-            console.log(x_axis_values);
             this.chart = c3.generate({
                 data: {
-                    x: 'x',
+                    xs: {
+                        "users":"x",
+                        "avg":"x2"
+                    },
+
                     columns: [
                         this.when,
-                        this.data
-                    ]
+                        this.when_mean,
+                        this.data,
+                        this.data_mean
+                    ],
+                    types: {
+                        'avg' :"spline"
+                    }
                 },
                 axis: {
                     x: {

@@ -231,7 +231,12 @@ class Control(Protocol):
         with self.session as session:
             lecture = session.query(model.Lecture).get(lecture_id)
             heats = list(lecture.lecture_series(when))
-            sample = []
+            usersample = []
             for issue in heats:
-                sample.append((issue[0], self._heat_list(lecture.lecture_series(issue[0]))))
-            return sample
+                usersample.append((issue[0], self._heat_list(lecture.lecture_series(issue[0]))))
+            serversample = []
+            i = 5*60
+            while i<when:
+                serversample.append((i, self._heat_list(lecture.lecture_series(i))))
+                i += 5*60
+            return {"user":usersample,"server":serversample}
