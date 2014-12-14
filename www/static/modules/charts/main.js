@@ -88,6 +88,11 @@ define([
                 x_axis_values.push(i);
                 i -= 5;
             }
+            var y_axis_values = [], j = 100;
+            while(j>-100){
+                y_axis_values.push(j);
+                j -=1;
+            }
             x_axis_values.push(0);
             console.log(x_axis_values);
             this.chart = c3.generate({
@@ -102,6 +107,11 @@ define([
                     x: {
                         tick: {
                             values: x_axis_values
+                        }
+                    },
+                    y: {
+                        tick: {
+                            values: y_axis_values
                         }
                     }
                 }
