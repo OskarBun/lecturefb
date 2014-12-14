@@ -100,7 +100,7 @@ class Control(Protocol):
             for message in self._pending:
                 for client in self._clients:
                     client.broadcast(message)
-        self._pending.clear()
+        self._pending = []
 
     def _broadcast(self, message):
         self._pending.append(utils.dumps(message))
