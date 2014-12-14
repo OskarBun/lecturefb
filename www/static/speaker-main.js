@@ -16,6 +16,11 @@ require.config({
         "augment":          "bower_components/augment.js/augment",
         "d3":               "bower_components/d3/d3",
         "c3":               "bower_components/c3/c3"
+    },
+    shim:{
+        "bootstrap": {
+            "deps": ["jquery"]
+        }
     }
 });
 
