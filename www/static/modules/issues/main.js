@@ -28,7 +28,6 @@ define([
                 },
                 function(response){
                     if(response.error){
-                        debugger;
                         this.appl.error(response.error);
                         return;
                     }
