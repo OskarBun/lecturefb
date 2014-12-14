@@ -7,19 +7,20 @@ from pkg_resources import resource_filename  # @UnresolvedImport
 
 from lecturefb.control import Control
 from lecturefb.handlers.logout_handler import LogoutHandler
+from lecturefb.handlers.speaker_handler import SpeakerHandler
 from lecturefb.handlers.websocket_handler import ControlHandler
 from lecturefb.handlers.login_handler import LoginHandler
-from lecturefb.handlers.main_handler import MainHandler
+from lecturefb.handlers.student_handler import StudentHandler
 
 define("port", 8888, int, help="port to listen on")
 
 def main():
 	handlers = [
-		(r"/", MainHandler, {"page": "person-index.html"}),
-		(r"/speaker", MainHandler, {"page": "speaker-index.html"}),
+		(r"/speaker", SpeakerHandler),
 		(r"/websocket", ControlHandler),
 		(r"/login", LoginHandler),
-		(r"/logout", LogoutHandler)
+		(r"/logout", LogoutHandler),
+		(r"/", StudentHandler),
 	]
 	settings = dict(
 		static_path = resource_filename('lecturefb',"www/static"),

@@ -2,17 +2,16 @@ import tornado
 from tornado.web import authenticated
 
 
-class MainHandler(tornado.web.RequestHandler):
-
-    def initialize(self, page = "index.html"):
-        self.page = page
+class StudentHandler(tornado.web.RequestHandler):
 
 
     @property
     def cookie_name(self):
         return self.application.settings.get("cookie_name")
 
-
+    @property
+    def control(self):
+        return self.application.settings["control"]
 
 
     def get_current_user(self):
@@ -23,4 +22,4 @@ class MainHandler(tornado.web.RequestHandler):
 
     @authenticated
     def get(self):
-        self.render(self.page)
+        self.render("person-index.html")
