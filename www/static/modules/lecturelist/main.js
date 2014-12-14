@@ -60,13 +60,12 @@ define([
             var status = null;
             if(this.options.upcoming && this.options.archive){
                 status = "current";
-            } else {
-                if(this.options.upcoming){
-                    status = "upcoming";
-                }
-                if(this.options.archive){
-                    status = "archive";
-                }
+            }
+            else if(this.options.upcoming){
+                status = "upcoming";
+            }
+            else if(this.options.archive){
+                status = "archive";
             }
             this.appl.componentsignal.showlecture.dispatch(value, status);
         };

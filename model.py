@@ -1,7 +1,11 @@
+import calendar
+import datetime
+import cmath
+from sqlalchemy import and_
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.types import String, Integer, Numeric, DateTime, Date, Time, Enum, Boolean, Text
 from sqlalchemy.schema import Table, Column, ForeignKey
-from sqlalchemy.orm import relationship, backref, deferred
+from sqlalchemy.orm import relationship, backref, deferred, object_session
 from sqlalchemy.ext.declarative.api import declared_attr, has_inherited_table, declarative_base
 import re
 
@@ -44,6 +48,14 @@ class Lecture(Base):
         back_populates='lectures')
     starts = Column(DateTime)
     ends = Column(DateTime)
+
+    def lecture_series(self, offset):
+        session = object_session(self)
+        delta = self.starts + datetime.timedelta(seconds = offset)
+        for t in session.query(Timeseries).filter(and_(Timeseries.lecture==self,
+                                                       Timeseries.when<=offset)):
+            yield t.when, t.impact(delta)
+
 
 
 class Person(Base):
@@ -89,6 +101,18 @@ class Timeseries(Base):
     person = relationship('Person', uselist=False,
         primaryjoin='Timeseries.person_id==Person.id', remote_side='Person.id')
     value = Column(Integer)
+
+    def impact(self, offset = None):
+        offset = offset if offset is not None else datetime.datetime.now()
+        delta = calendar.timegm(offset.timetuple())
+        delta = delta - calendar.timegm((self.lecture.starts +
+                                         datetime.timedelta(seconds = self.when)).timetuple())
+        delta = delta/60 #from seconds to minutes
+        decay_constant = 50 #rate of exponential decay
+        impact = self.value*cmath.e**(-delta/decay_constant)
+        return impact
+
+
 
 
 class Transcript(Base):

@@ -14,12 +14,12 @@ define([
             this.comment = ko.observable();
             this.success = ko.observable();
             this.type_hold = null;
-            this.appl.componentsignal.showlecture.add(this.recieve.bind(this));
+            this.appl.componentsignal.showlecture.add(this.recieve, this);
         }
 
         Panel.prototype.recieve = function(lecture, status) {
-            this.lecture(lecture);
             this.status(status);
+            this.lecture(lecture);
         };
 
         Panel.prototype.new_transcript = function(type){
@@ -48,7 +48,7 @@ define([
         };
 
         Panel.prototype.dispose = function(){
-            this.appl.componentsignal.showlecture.remove(this.recieve);
+            this.appl.componentsignal.showlecture.remove(this.recieve, this);
         };
 
         return Panel;

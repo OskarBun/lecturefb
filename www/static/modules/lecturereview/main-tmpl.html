@@ -41,7 +41,7 @@
                                 <i class="fa fa-tasks fa-5x"></i>
                             </div>
                             <div class="col-xs-9 text-right">
-                                <div class="huge">50</div>
+                                <div><span class="huge" data-bind="text:$parent.data_stat"></span></div>
                                 <div>Responses!</div>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" data-bind="if:$parent.status()!='upcoming'">
         <charts params="{appl:$root, lecture: $data}"></charts>
     </div>
     <div class="row">

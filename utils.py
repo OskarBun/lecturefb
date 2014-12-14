@@ -27,12 +27,12 @@ def dumps(o, **kwargs):
 
 
 
-def parse_date(value):
+def parse_date(value, date_format = "%Y-%m-%dT%H:%M:%S.%fZ"):
     """Returns a Python datetime.datetime object, the input must be in some date ISO format""" 
     result = None
     if input:
         try:
-            result = datetime.datetime.strptime(value,"%Y-%m-%dT%H:%M:%S.%fZ")
+            result = datetime.datetime.strptime(value, date_format)
         except:
             try:
                 result =  datetime.datetime.strptime(value,"%Y-%m-%d %H:%M:%S.%f")
@@ -40,7 +40,10 @@ def parse_date(value):
                 try:
                     result =  datetime.datetime.strptime(value,"%Y-%m-%d %H:%M:%S")
                 except:
-                    result =  datetime.datetime.strptime(value,"%Y-%m-%d")
+                    try:
+                        result =  datetime.datetime.strptime(value,"%Y-%m-%d %H:%M")
+                    except:
+                        result =  datetime.datetime.strptime(value,"%Y-%m-%d")
                 
     return result
 

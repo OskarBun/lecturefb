@@ -1,5 +1,5 @@
 define([
-        "knockout", "./connect", "crossroads", "hasher"
+        "knockout", "./connection", "crossroads", "hasher"
     ],
     function (ko, Connect, crossroads, hasher) {
 

@@ -10,10 +10,12 @@ require.config({
         "datetimepicker":   "bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
         "kojqueryui":       "utils/ko-jqueryui",
         "moment":           "bower_components/moment/moment",
-        "signals":        "bower_components/js-signals/dist/signals",
+        "signals":          "bower_components/js-signals/dist/signals",
         "hasher":           "bower_components/hasher/dist/js/hasher",
         "crossroads":       "bower_components/crossroads/dist/crossroads",
-        "augment":          "bower_components/augment.js/augment"
+        "augment":          "bower_components/augment.js/augment",
+        "d3":               "bower_components/d3/d3",
+        "c3":               "bower_components/c3/c3"
     }
 });
 
@@ -69,7 +71,8 @@ require([
 
         appl.componentsignal = {
 			showlecture : new signals.Signal(),
-            messageslen : new signals.Signal()
+            messageslen : new signals.Signal(),
+            datalen: new signals.Signal()
 		};
 
         appl.addRoute("", function(){

@@ -10,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-md-5">
-            <issues params="{appl:$root, lecture:$data}"></issues>
+            <issues params="{appl:$root, lecture:$data, status:$parent.status}"></issues>
         </div>
         <div class="col-md-7">
             <progressbar params="{appl:$root, lecture:$data}"></progressbar>
@@ -23,8 +23,8 @@
             <transcripts params="{appl:$root, lecture:$data, type:'formal', person_id:$root.user().id}"></transcripts>
             <form data-bind="submit:$parent.new_transcript.bind($parent, 'formal')">
                 <textarea class="form-control" id="commentinput" rows="3" placeholder="comment"
-                          data-bind="value:$parent.comment"></textarea>
-                <button class="btn btn-default btn-block" type="submit">send</button>
+                          data-bind="textInput:$parent.comment"></textarea>
+                <button class="btn btn-default btn-block" type="submit" data-bind="enable:$parent.comment">send</button>
             </form>
         </div>
         <div class="col-md-7">

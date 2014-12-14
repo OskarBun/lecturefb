@@ -1,25 +1,33 @@
 define([
-    "knockout", "chartjs"
+    "knockout", "moment", "c3", "d3"
     ],
-    function(ko, Chart){
+    function(ko, moment, c3){
         function Panel(params){
             this.appl = params.appl;
-            this.graph = null;
+            this.chart = null;
             this.lecture = ko.observable(params.lecture);
-            this.when = [];
-            this.data = [];
+            this.when = ["x", 0];
+            this.data = ["speed", 0];
+            this._duration = 50*60; //This is an internal variable used to create the x axis
             this.broadcast_sub = this.appl.broadcast.subscribe(function(message){
                 if(message.signal=="lecture_issued"){
-                    if(message.message.lecture_id==this.lecture().id && this.graph){
-                        this.graph.addData([message.message.value], message.message.when)
+                    if(message.message.lecture_id==this.lecture().id){
+                        this.when.push(message.message.issue[0]/60);
+                        this.data.push(Number(message.message.issue[1].toFixed(2)));
+                        this.chart.load({
+                            columns: [
+                                this.when,
+                                this.data
+                            ]
+                        });
                     }
                 }
             }, this);
             this.appl.componentsignal.showlecture.add(this.lecture);
             this.lecture.subscribe(function(){
                 this.load_data();
-                this.graph.update();
             }, this);
+
         }
 
         Panel.prototype.init = function(){
@@ -28,52 +36,80 @@ define([
         };
 
         Panel.prototype.load_data = function(){
+            function offset(){
+                var date = moment();
+                var starts = moment(this.lecture().starts, "YYYY-MM-DD HH:mm:ss");
+                var ends =   moment(this.lecture().ends, "YYYY-MM-DD HH:mm:ss");
+                var secondsin = date.unix() - starts.unix();
+                var duration = this._duration = ends.unix() - starts.unix();
+                if(secondsin>duration){
+                    return duration
+                } else {
+                    return secondsin
+                }
+            }
             this.appl.send("lecture_timeseries",
                 {
-                    "lecture_id": this.lecture().id
+                    "lecture_id": this.lecture().id,
+                    "when": offset.bind(this)()
                 },
                 function(response){
                     if(response.error){
                         this.appl.error(response.error);
                         return;
                     }
-                    this.when = response.result.map(function(timeseries){
-                        return timeseries.when
+                    function clear(t, t1){
+                        t.splice(2, t.length-2);
+                        t1.forEach(function(time){
+                            t.push(time);
+                        });
+                        return t;
+                    }
+                    clear(this.when, response.result.map(function(tuple){
+                        return tuple[0]/60;
+                    }));
+                    clear(this.data, response.result.map(function(tuple){
+                        return Number(tuple[1].toFixed(2));
+                    }));
+                    this.chart.load({
+                        columns: [
+                            this.when,
+                            this.data
+                        ]
                     });
-                    this.data = response.result.map(function(timeseries){
-                        return timeseries.value
-                    })
+                    this.appl.componentsignal.datalen.dispatch(response.result.length);
                 }.bind(this)
             );
         };
 
         Panel.prototype.make_graph = function(){
-            var data = {
-                labels:this.when,
-                datasets: {
-                    label: "Opinion",
-                    fillColor: "rgba(220,220,220,0)",
-                    strokeColor: "rgba(220,220,220,1)",
-                    pointColor: "rgba(220,220,220,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: this.data
+            var x_axis_values = [], i = parseInt(this._duration/60, 10);
+            while(i>0){
+                x_axis_values.push(i);
+                i -= 5;
+            }
+            x_axis_values.push(0);
+            console.log(x_axis_values);
+            this.chart = c3.generate({
+                data: {
+                    x: 'x',
+                    columns: [
+                        this.when,
+                        this.data
+                    ]
+                },
+                axis: {
+                    x: {
+                        tick: {
+                            values: x_axis_values
+                        }
+                    }
                 }
-            };
-            var options = {
-
-
-                showScale : true,
-                pointDot : true,
-                datasetFill : false
-            };
-            var ctx = document.getElementById("opGraph").getContext("2d");
-            this.graph = new Chart(ctx).Line(data, options);
+            });
         };
 
         Panel.prototype.dispose = function(){
-            this.appl.broadcast.dispose(this.broadcast_sub);
+            this.broadcast_sub.dispose();
             this.appl.componentsignal.showlecture.remove(this.lecture)
         };
 

@@ -127,27 +127,27 @@ class Control(Protocol):
                 session.commit()
             return str(person.id), person.admin
 
-    def _issue_impact(self, timeseries):
-        delta = calendar.timegm(datetime.datetime.now().timetuple()) - calendar.timegm((timeseries.lecture.starts + datetime.timedelta(seconds = timeseries.when)).timetuple())
-        delta= delta/60 #from seconds to minutes
-        decay_constant = 5 #rate of exponential decay
-        impact = timeseries.value*cmath.e**(-delta/decay_constant)
-        return impact
-
-    def _get_lecture_heat(self, accl, lecture_id):
+    def _get_lecture_heat(self, lecture_id):
         with self.session as session:
-            times = session.query(model.Timeseries).filter(and_(model.Timeseries.lecture_id==1,
+            times = session.query(model.Timeseries).filter(and_(model.Timeseries.lecture_id==lecture_id,
                                                                 model.Timeseries.issue_id==2,
                                                                 model.Timeseries.person_id!=0))
             heat = 0
             for t in times:
-                heat += self._issue_impact(t)
+                heat += t.impact()
             return heat
+
+    def _heat_list(self, list):
+        if list is not None:
+            x = 0
+            for heat in list:
+                x += heat[1]
+            return x
 
     def new_lecture(self, accl, title, description, starts, ends):
         with self.session as session:
-            starts = datetime.datetime.strptime(starts, "%Y-%m-%d %H:%M")
-            ends = datetime.datetime.strptime(ends, "%Y-%m-%d %H:%M")
+            starts = utils.parse_date(starts)
+            ends = utils.parse_date(ends)
             if starts > ends:
                 raise Exception("You must start before you can finish")
             lecture = session.query(model.Lecture).filter(and_(model.Lecture.title==title,
@@ -184,10 +184,10 @@ class Control(Protocol):
                 lectures = lectures.filter(model.Lecture.ends >= after_date)
             else:
                 if before_date:
-                    before_date = datetime.datetime.strptime(before_date, "%Y-%m-%d %H:%M")
+                    before_date = utils.parse_date(before_date, "%Y-%m-%d %H:%M")
                     lectures = lectures.filter(model.Lecture.starts >= before_date)
                 if after_date:
-                    after_date = datetime.datetime.strptime(after_date, "%Y-%m-%d %H:%M")
+                    after_date = utils.parse_date(after_date, "%Y-%m-%d %H:%M")
                     lectures = lectures.filter(model.Lecture.ends <= after_date)
             if after_date:
                 lectures = lectures.order_by(model.Lecture.starts.desc())
@@ -213,16 +213,25 @@ class Control(Protocol):
                 comments = comments.filter(model.Transcript.person_id==person_id)
             return [self.transcript_to_json(t) for t in comments]
 
-    def new_lecture_issue(self, accl, value, lecture_id, when, issue_id):
-        heat = self._get_lecture_heat(accl, lecture_id)
+    def new_lecture_timeseries(self, accl, value, lecture_id, when, issue_id):
         with self.session as session:
-            timeseries = model.Timeseries(issue_id = issue_id, lecture_id = lecture_id, when = when, person_id = accl, value=heat+value)
+            lasttimeseries = session.query(model.Timeseries).filter(and_(model.Timeseries.person_id==accl,
+                                                                         model.Timeseries.lecture_id==lecture_id,
+                                                                         (when-model.Timeseries.when)<(3*60)))
+            lasttimeseries = lasttimeseries.first()
+            if lasttimeseries is not None:
+                raise Exception("You shouldn't poke me so much, please wait {} seconds".format((3*60-(when-lasttimeseries.when))))
+            timeseries = model.Timeseries(issue_id = issue_id, lecture_id = lecture_id, when = when, person_id = accl, value=value)
             session.add(timeseries)
             session.commit()
-            self._broadcast({"signal":"lecture_issued", "message":{"lecture_id":lecture_id, "when": when, "value":heat+value}})
+            self._broadcast({"signal":"lecture_issued", "message":{"lecture_id":lecture_id, "issue":(when, self._get_lecture_heat(lecture_id))}})
             return {"issue":value}
 
-    def lecture_timeseries(self, accl, lecture_id):
+    def lecture_timeseries(self, accl, lecture_id, when):
         with self.session as session:
-            timeseries = session.query(model.Timeseries).filter(model.Timeseries.lecture_id==lecture_id)
-            return [self.timeseries_to_json(t) for t in timeseries]
+            lecture = session.query(model.Lecture).get(lecture_id)
+            heats = list(lecture.lecture_series(when))
+            sample = []
+            for issue in heats:
+                sample.append((issue[0], self._heat_list(lecture.lecture_series(issue[0]))))
+            return sample
