@@ -18,6 +18,8 @@
     </div>
     <div class="row" data-bind="if:$root.user">
         <div class="col-md-5">
+            <h4>Description</h4>
+            <p class="lead" data-bind="text:description"></p>
             <h4>Comment</h4>
 
             <transcripts params="{appl:$root, lecture:$data, type:'formal', person_id:$root.user().id}"></transcripts>
