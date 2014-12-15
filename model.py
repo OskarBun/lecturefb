@@ -108,7 +108,7 @@ class Timeseries(Base):
         delta = delta - calendar.timegm((self.lecture.starts +
                                          datetime.timedelta(seconds = self.when)).timetuple())
         delta = delta/60 #from seconds to minutes
-        decay_constant = 25 #rate of exponential decay
+        decay_constant = 30 #rate of exponential decay
         impact = self.value*cmath.e**(-delta/decay_constant)
         return impact
 
