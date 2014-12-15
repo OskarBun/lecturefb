@@ -235,8 +235,8 @@ class Control(Protocol):
             for issue in heats:
                 usersample.append((issue[0], self._heat_list(lecture.lecture_series(issue[0]))))
             serversample = []
-            i = 2.5*60
+            i = 2*60
             while i<when:
                 serversample.append((i, self._heat_list(lecture.lecture_series(i))))
-                i += 2.5*60
+                i += 2*60
             return {"user":usersample,"server":serversample}
