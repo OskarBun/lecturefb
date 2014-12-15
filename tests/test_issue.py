@@ -31,12 +31,18 @@ class Test(unittest.TestCase):
         self.control.new_lecture_timeseries(accl = 1, value = 1, lecture_id = 1, when= 5*60, issue_id = 2)
         self.control.new_lecture_timeseries(accl = 1, value = -1, lecture_id= 1, when= 10*60, issue_id =2)
         with self.control.session as session:
+            when = 180*60
             lecture = session.query(model.Lecture).get(1)
-            heats = list(lecture.lecture_series(10*60))
-            sample = [(0, 0)]
-            for issue in heats:
-                sample.append((issue[0], self.heat_list(lecture.lecture_series(issue[0]))))
-            print(sample)
+            heats = list(lecture.lecture_series(when))
+            sample = []
+            for userissue in heats:
+                sample.append((userissue[0], self.heat_list(lecture.lecture_series(userissue[0]))))
+            serversample = []
+            i = 2*60
+            while i<when:
+                serversample.append((i, self.heat_list(lecture.lecture_series(i))))
+                i += 2*60
+            print({"user":sample,"server":serversample})
 
 
 

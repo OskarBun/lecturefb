@@ -118,9 +118,7 @@ define([
                         this.data,
                         this.data_mean
                     ],
-                    types: {
-                        'trend' :"spline"
-                    }
+
                 },
                 point:{
                     r:function(d){
